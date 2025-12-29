@@ -40,4 +40,33 @@ async function listCars(client_id = null) {
   return res.rows;
 }
 
-module.exports = { createCar, getCarById, listCars };
+
+async function updateCar(id, { brand, model, plate_number, vin, year }) {
+  const res = await pool.query(
+    `UPDATE cars
+     SET brand = $2,
+         model = $3,
+         plate_number = $4,
+         vin = $5,
+         year = $6
+     WHERE id = $1 AND is_archived = FALSE
+     RETURNING id, client_id, brand, model, plate_number, vin, year, created_at`,
+    [id, brand, model, plate_number || null, vin || null, year || null]
+  );
+
+  return res.rows[0] || null;
+}
+
+
+async function archiveCar(id) {
+  const res = await pool.query(
+    `UPDATE cars
+     SET is_archived = TRUE
+     WHERE id = $1 AND is_archived = FALSE
+     RETURNING id`,
+    [id]
+  );
+  return res.rows[0] || null;
+}
+
+module.exports = { createCar, getCarById, listCars, updateCar, archiveCar };

@@ -10,7 +10,12 @@ async function createClient(req, res, next) {
       throw new AppError(400, "Validation error", { required: ["full_name", "phone"] });
     }
 
-    const created = await repo.createClient({ full_name: full_name.trim(), phone: phone.trim(), email });
+    const created = await repo.createClient({
+      full_name: full_name.trim(),
+      phone: phone.trim(),
+      email,
+    });
+
     return res.status(201).json(created);
   } catch (e) {
     return next(e);
@@ -39,4 +44,30 @@ async function getClient(req, res, next) {
   }
 }
 
-module.exports = { createClient, listClients, getClient };
+async function patchClient(req, res, next) {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id <= 0) throw new AppError(400, "Invalid id");
+
+    const { full_name, phone, email } = req.body;
+
+    // Минимальная валидация как при создании
+    if (!isNonEmptyString(full_name) || !isNonEmptyString(phone)) {
+      throw new AppError(400, "Validation error", { required: ["full_name", "phone"] });
+    }
+
+    const updated = await repo.updateClientById(id, {
+      full_name: full_name.trim(),
+      phone: phone.trim(),
+      email
+    });
+
+    if (!updated) throw new AppError(404, "Client not found");
+
+    return res.json(updated);
+  } catch (e) {
+    return next(e);
+  }
+}
+
+module.exports = { createClient, listClients, getClient, patchClient };

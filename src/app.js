@@ -12,10 +12,10 @@ const app = express();
 
 app.use(express.json());
 
-// health
+// health (без /api)
 app.use(healthRoutes);
 
-// API
+// API (всё под /api/...)
 app.use("/api", clientsRoutes);
 app.use("/api", carsRoutes);
 app.use("/api", bookingsRoutes);
