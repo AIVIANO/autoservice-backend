@@ -7,8 +7,10 @@ CREATE TABLE IF NOT EXISTS clients (
   phone        TEXT NOT NULL,
   email        TEXT,
   is_archived  BOOLEAN NOT NULL DEFAULT FALSE,
-  created_at   TIMESTAMPTZ NOT NULL DEFAULT now()
+  created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at   TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
 
 CREATE TABLE IF NOT EXISTS cars (
   id           BIGSERIAL PRIMARY KEY,
