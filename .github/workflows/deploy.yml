@@ -26,5 +26,17 @@ jobs:
             docker compose down || true
             docker compose up -d --build
             docker compose ps
+            
+            echo "Waiting for API /health ..."
+            for i in {1..30}; do
+              if curl -fsS http://127.0.0.1:3000/health >/dev/null; then
+                echo "API is up"
+                break
+              fi
+              echo "Not ready yet ($i/30), sleep 2s..."
+              sleep 2
+            done
+
+            # Финальная проверка (чтобы job упал, если так и не поднялось)
             curl -fsS http://127.0.0.1:3000/health
             curl -fsS http://127.0.0.1:3000/health/db
